@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-
-const uri = "mongodb+srv://srutisagar007:3MT9zRAQ2RKdDMd5@cluster0.qwhouyu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+import dotenv from "dotenv"
+dotenv.config()
 
 const connectDb = () => {
-    return mongoose.connect(uri, {
+    return mongoose.connect(process.env.MONGO_CONNECTION_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     })
