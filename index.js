@@ -1,6 +1,7 @@
 import dotenv from "dotenv"
 import cors from 'cors'
-
+import express from "express";
+import connectDb from "./Connections/dbconnections.js"
 
 dotenv.config()
 
@@ -11,7 +12,7 @@ app.use(express.json());
 app.get("/",(req,res)=>{
     res.send("Hello");
 })
-
+connectDb();
 app.listen(process.env.PORT, () => {
     console.log(`Server running on port 1000`);
 });
