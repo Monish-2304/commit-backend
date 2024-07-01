@@ -19,6 +19,11 @@ export const loginUser = async (req, res) => {
             expiresIn: '1h',
         });
 
+        res.cookie('jwtToken', token, {
+            secure: true,
+            maxAge: 3600000,
+        });
+
         res.json({
             user: { email: user.email, username: user.userName },
             token,
@@ -49,6 +54,11 @@ export const registerUser = async (req, res) => {
         await user.save();
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
             expiresIn: '1h',
+        });
+
+        res.cookie('jwtToken', token, {
+            secure: true,
+            maxAge: 3600000,
         });
         res.json({
             user: { email: user.email, userName: user.userName },
