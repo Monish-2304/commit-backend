@@ -1,28 +1,29 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from 'mongoose';
+import { Mission } from './mission.model.js';
 const userSchema = new mongoose.Schema({
     userName: {
-        type:String,
-        unique:true,
-        required:true
+        type: String,
+        unique: true,
+        required: true,
     },
     email: {
-        type:String,
-        unique:true,
-        required:true
+        type: String,
+        unique: true,
+        required: true,
     },
     password: {
-        type:String,
-        required:true
+        type: String,
+        required: true,
     },
-    isAuth :{
-        type:Boolean
+    isAuth: {
+        type: Boolean,
     },
-    missions :[{
-        type: Schema.Types.ObjectId,
-        ref:Mission
-    }]
-})
+    missions: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: Mission,
+        },
+    ],
+});
 
-
-
-export const User = mongoose.model('User',userSchema)
+export const User = mongoose.model('User', userSchema);
