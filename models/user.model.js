@@ -15,6 +15,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    bio: {
+        type: String,
+        default: '',
+    },
+    profilePicture: {
+        type: String,
+        default: '',
+    },
     isAuth: {
         type: Boolean,
     },
@@ -24,6 +32,8 @@ const userSchema = new mongoose.Schema({
             ref: Mission,
         },
     ],
+    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 });
 
 export const User = mongoose.model('User', userSchema);
