@@ -1,7 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import { User } from './user.model.js';
-import { Mission } from './mission.model.js';
-import { Comment } from './comment.model.js';
 
 const postSchema = new mongoose.Schema(
     {
@@ -18,23 +15,23 @@ const postSchema = new mongoose.Schema(
             default: 0,
         },
         images: [String],
-        mission: {
+        missionId: {
             type: Schema.Types.ObjectId,
-            ref: Mission,
+            ref: 'Mission',
             required: true,
         },
         userId: {
             type: Schema.Types.ObjectId,
-            ref: User,
+            ref: 'User',
             required: true,
         },
         comments: [
             {
-                user: { type: Schema.Types.ObjectId, ref: User },
+                user: { type: Schema.Types.ObjectId, ref: 'User' },
                 comment: { type: String },
                 parentComment: {
                     type: Schema.Types.ObjectId,
-                    ref: Comment,
+                    ref: 'Comment',
                     default: null,
                 },
             },
