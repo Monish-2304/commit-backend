@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { Mission } from './mission.model.js';
+
 const userSchema = new mongoose.Schema({
     userName: {
         type: String,
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     missions: [
         {
             type: Schema.Types.ObjectId,
-            ref: Mission,
+            ref: 'Mission',
         },
     ],
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],

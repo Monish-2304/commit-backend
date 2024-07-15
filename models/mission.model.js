@@ -10,6 +10,10 @@ const missionSchema = new mongoose.Schema({
     description: {
         type: String,
     },
+    targetDays: {
+        type: Number,
+        default: 30,
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: User,
@@ -22,7 +26,7 @@ const missionSchema = new mongoose.Schema({
     posts: [{ type: Schema.Types.ObjectId, ref: Post }],
     status: {
         type: String,
-        enum: ['active', 'completed', 'failed'],
+        enum: ['active', 'completed', 'gaveUp'],
         default: 'active',
     },
     createdAt: {
