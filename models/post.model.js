@@ -14,7 +14,10 @@ const postSchema = new mongoose.Schema(
             type: Number,
             default: 0,
         },
-        images: [String],
+        images: {
+            type: [String],
+            default: [],
+        },
         missionId: {
             type: Schema.Types.ObjectId,
             ref: 'Mission',

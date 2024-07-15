@@ -3,6 +3,7 @@ import {
     addPost,
     deletePost,
     editPost,
+    getAllPosts,
     getAllPostsByUser,
     getPost,
     getPreSignedUrls,
@@ -10,11 +11,12 @@ import {
 
 const router = Router();
 
-router.post('/addpost', addPost);
+router.post('/createpost', addPost);
 router.post('/generateUrls', getPreSignedUrls);
-router.get('/getPost', getPost);
-router.get('/getAllPosts', getAllPostsByUser);
-router.put('/editPost', editPost);
+router.get('/:postId', getPost);
+router.get('/getAllPostsByUser/:userId', getAllPostsByUser);
+router.post('/getAllPosts', getAllPosts);
+router.put('/:postId', editPost);
 router.delete('/:postId', deletePost);
 
 export default router;

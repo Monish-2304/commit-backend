@@ -24,9 +24,26 @@ export const addPost = async (req, res) => {
             });
         }
 
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const existingPost = await Post.findOne({
+            missionId,
+            userId,
+            createdAt: { $gte: startOfDay, $lte: endOfDay },
+        });
+
+        if (!existingPost) {
+            mission.streakCount += 1;
+            await mission.save();
+        }
+
         const post = new Post({
             description,
-            streakCount: mission.streakCount + 1,
+            streakCount: mission.streakCount,
             images: imageUrls,
             missionId,
             userId,
@@ -34,7 +51,6 @@ export const addPost = async (req, res) => {
 
         await post.save();
 
-        mission.streakCount += 1;
         mission.posts.push(post._id);
         await mission.save();
 
@@ -60,7 +76,14 @@ export const getPreSignedUrls = async (req, res) => {
 
 export const editPost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
+        const post = await Post.findById(req.params.postId);
+        const { userId, description, images } = req.body;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                message: 'User not found',
+            });
+        }
         if (!post) {
             return res.status(404).json({
                 message: 'Post not found',
@@ -75,9 +98,8 @@ export const editPost = async (req, res) => {
             });
         }
 
-        post.content = req.body.content || post.content;
-        const imageUrls = req.body.imageUrls;
-        post.images = imageUrls || post.images;
+        post.description = description || post.description;
+        post.images = images || post.images;
 
         await post.save();
 
@@ -91,7 +113,7 @@ export const editPost = async (req, res) => {
 
 export const getPost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id);
+        const post = await Post.findById(req.params.postId);
         if (!post) {
             return res.status(404).json({
                 message: 'Post not found',
@@ -121,17 +143,16 @@ export const deletePost = async (req, res) => {
             });
         }
 
-        const fileNames = post.imageUrls.map((url) => url.split('/').pop());
-        await deleteFileFromS3(fileNames);
+        const fileNames = post.images?.map((url) => url.split('/').pop()) || [];
 
-        await post.remove();
-
-        const mission = await Mission.findById(post.mission);
+        const mission = await Mission.findById(post.missionId);
         if (mission) {
             mission.posts.pull(post._id);
             await mission.save();
         }
+        if (fileNames.length > 0) await deleteFileFromS3(fileNames);
 
+        await Post.findByIdAndDelete(postId);
         res.status(200).json({
             message: 'Post deleted successfully',
         });
@@ -144,12 +165,69 @@ export const deletePost = async (req, res) => {
 
 export const getAllPostsByUser = async (req, res) => {
     try {
-        const { userId } = req.body;
-        const user = await findOne(userId);
+        const userId = req.params.userId;
+        const user = await User.findById(userId);
+        console.log(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         const posts = await Post.find({ userId });
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json({
+            message: error.message,
+        });
+    }
+};
+
+export const getAllPosts = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const userId = user._id;
+        const posts = await Post.aggregate([
+            { $match: { userId: { $ne: userId } } },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            {
+                $lookup: {
+                    from: 'missions',
+                    localField: 'missionId',
+                    foreignField: '_id',
+                    as: 'mission',
+                },
+            },
+            { $unwind: '$mission' },
+            {
+                $project: {
+                    _id: 1,
+                    upvotes: 1,
+                    description: 1,
+                    streakCount: 1,
+                    images: 1,
+                    missionName: '$mission.missionName',
+                    targetDays: '$mission.targetDays',
+                    missionId: 1,
+                    user: {
+                        _id: '$user._id',
+                        userName: '$user.userName',
+                    },
+                    comments: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                },
+            },
+        ]);
         res.status(200).json(posts);
     } catch (error) {
         res.status(500).json({

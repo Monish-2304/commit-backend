@@ -5,7 +5,7 @@ export const createMission = async (req, res) => {
     try {
         const { missionName, description, userId, targetDays, createdAt } =
             req.body;
-        const user = await User.findOne({ userId });
+        const user = await User.findOne({ _id: userId });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -14,7 +14,7 @@ export const createMission = async (req, res) => {
             missionName,
             description,
             targetDays,
-            userId,
+            user: userId,
             createdAt,
         });
         await mission.save();
