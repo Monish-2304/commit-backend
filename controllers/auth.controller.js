@@ -15,9 +15,13 @@ export const loginUser = async (req, res) => {
         if (!passwordMatch) {
             return res.status(400).json({ message: 'Password is invalid' });
         }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-            expiresIn: '1h',
-        });
+        const token = jwt.sign(
+            { id: user._id, email: user.email },
+            process.env.JWT_SECRET_KEY,
+            {
+                expiresIn: '1h',
+            }
+        );
 
         res.cookie('jwtToken', token, {
             secure: true,
@@ -31,6 +35,19 @@ export const loginUser = async (req, res) => {
     } catch (error) {
         console.error(error.message);
         res.status(500).send(error.message);
+    }
+};
+
+export const validateUser = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await User.findById(userId).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json({ user, message: 'User validated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Authentication failed' });
     }
 };
 
@@ -52,9 +69,13 @@ export const registerUser = async (req, res) => {
             password: hashedPassword,
         });
         await user.save();
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
-            expiresIn: '1h',
-        });
+        const token = jwt.sign(
+            { id: user._id, email },
+            process.env.JWT_SECRET_KEY,
+            {
+                expiresIn: '1h',
+            }
+        );
 
         res.cookie('jwtToken', token, {
             secure: true,
