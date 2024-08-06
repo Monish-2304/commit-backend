@@ -29,7 +29,7 @@ export const loginUser = async (req, res) => {
         });
 
         res.json({
-            user: { email: user.email, username: user.userName },
+            user: { email: user.email, userName: user.userName },
             token,
         });
     } catch (error) {
