@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import { User } from '../models/user.model.js';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import generateToken from '../utils/generateToken.js';
 
 dotenv.config();
 export const loginUser = async (req, res) => {
@@ -15,18 +15,8 @@ export const loginUser = async (req, res) => {
         if (!passwordMatch) {
             return res.status(400).json({ message: 'Password is invalid' });
         }
-        const token = jwt.sign(
-            { id: user._id, email: user.email },
-            process.env.JWT_SECRET_KEY,
-            {
-                expiresIn: '1h',
-            }
-        );
 
-        res.cookie('jwtToken', token, {
-            secure: true,
-            maxAge: 3600000,
-        });
+        const token = generateToken(res, user._id, user.email);
 
         res.json({
             user: { email: user.email, userName: user.userName },
@@ -69,18 +59,7 @@ export const registerUser = async (req, res) => {
             password: hashedPassword,
         });
         await user.save();
-        const token = jwt.sign(
-            { id: user._id, email },
-            process.env.JWT_SECRET_KEY,
-            {
-                expiresIn: '1h',
-            }
-        );
-
-        res.cookie('jwtToken', token, {
-            secure: true,
-            maxAge: 3600000,
-        });
+        const token = generateToken(res, user._id, user.email);
         res.json({
             user: { email: user.email, userName: user.userName },
             token,
