@@ -14,6 +14,9 @@ const missionSchema = new mongoose.Schema({
         type: Number,
         default: 30,
     },
+    priority: {
+        type: Number,
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: User,

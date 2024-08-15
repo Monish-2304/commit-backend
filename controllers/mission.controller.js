@@ -3,17 +3,23 @@ import { User } from '../models/user.model.js';
 
 export const createMission = async (req, res) => {
     try {
-        const { missionName, description, userId, targetDays, createdAt } =
-            req.body;
-        const user = await User.findOne({ _id: userId });
+        const {
+            missionName,
+            description,
+            userId,
+            priority,
+            targetDays,
+            createdAt,
+        } = req.body;
+        const user = await User.findById({ _id: userId });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
         const mission = new Mission({
             missionName,
             description,
             targetDays,
+            priority,
             user: userId,
             createdAt,
         });
@@ -31,7 +37,7 @@ export const createMission = async (req, res) => {
 export const getMission = async (req, res) => {
     try {
         const { missionId } = req.params;
-        const mission = await findOne(missionId);
+        const mission = await User.findById(missionId);
         if (!mission) {
             return res.status(404).json({ message: 'Mission not found' });
         }
@@ -45,8 +51,8 @@ export const getMission = async (req, res) => {
 
 export const getAllMissions = async (req, res) => {
     try {
-        const { userId } = req.body;
-        const user = await findOne(userId);
+        const { userId } = req.query;
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -62,7 +68,7 @@ export const getAllMissions = async (req, res) => {
 export const deletemission = async (req, res) => {
     try {
         const missionId = req.params;
-        const mission = await findOne(missionId);
+        const mission = await User.findOne(missionId);
         if (!mission) {
             return res.status(404).json({ message: 'Mission not found' });
         }
@@ -74,5 +80,40 @@ export const deletemission = async (req, res) => {
         res.status(500).json({
             message: error.message,
         });
+    }
+};
+
+export const saveLayout = async (req, res) => {
+    try {
+        const { userId, layout } = req.body;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.layout = layout;
+        await user.save();
+
+        res.status(200).json({ message: 'Layout saved successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error saving layout', error });
+    }
+};
+
+export const getLayout = async (req, res) => {
+    try {
+        const { userId } = req.body;
+
+        const user = await User.findById(userId);
+        const layout = user.layout.map((item) => ({
+            i: item.i,
+            x: Number(item.x), 
+            y: Number(item.y),
+            w: Number(item.w),
+            h: Number(item.h),
+        }));
+        res.status(200).json({ layout: layout });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching layout', error });
     }
 };

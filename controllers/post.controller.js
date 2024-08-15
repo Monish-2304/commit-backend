@@ -187,9 +187,7 @@ export const getAllPosts = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        const userId = user._id;
         const posts = await Post.aggregate([
-            { $match: { userId: { $ne: userId } } },
             {
                 $lookup: {
                     from: 'users',
@@ -221,6 +219,7 @@ export const getAllPosts = async (req, res) => {
                     user: {
                         _id: '$user._id',
                         userName: '$user.userName',
+                        profilePicture: '$user.profilePicture',
                     },
                     comments: 1,
                     createdAt: 1,

@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema({
             ref: 'Mission',
         },
     ],
+    layout: { type: Array, default: [] },
     followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 });
