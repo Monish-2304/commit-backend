@@ -7,16 +7,24 @@
   "scripts": {
     "dev": "nodemon -r dotenv/config --experimental-json-modules index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare":"husky install"
+    "prepare": "husky install"
   },
   "author": "monish s",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.1",
+    "@aws-sdk/client-s3": "^3.614.0",
+    "@aws-sdk/s3-request-presigner": "^3.614.0",
+    "axios": "^1.7.3",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "mongoose": "^8.4.3"
+    "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.3",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "husky": "^9.0.11",
@@ -24,7 +32,7 @@
     "nodemon": "^3.1.4",
     "prettier": "^3.3.2"
   },
-  "lint-staged":{
-    "*.{js,ts,md}":"prettier-write"
+  "lint-staged": {
+    "*.{js,ts,md}": "prettier-write"
   }
 }
