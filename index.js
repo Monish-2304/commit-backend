@@ -12,7 +12,11 @@ const port = process.env.PORT || 4000;
 const app = express();
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:4173',
+        'https://commit-org.vercel.app',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 };

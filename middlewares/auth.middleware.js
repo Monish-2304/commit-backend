@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 const authenticateToken = (req, res, next) => {
     const token =
         req.cookies.jwtToken || req.headers.authorization?.split(' ')[1];
-
     if (!token) {
         return res
             .status(401)

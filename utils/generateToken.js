@@ -8,6 +8,7 @@ const generateToken = (res, userId, email) => {
         httpOnly: true,
         secure: true,
         maxAge: 3600000,
+        sameSite: 'None',
     });
     return token;
 };
